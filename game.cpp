@@ -18,7 +18,9 @@ void Game::initializeGame() {
 Color Game::determineWinner() const {
     if (board.getRedCount() == 0) return BLACK;
     if (board.getBlackCount() == 0) return RED;
-    // TBD: Add check for stalemate (no legal moves left)
+    
+    
+    
     return BLACK;
 }
 
@@ -26,7 +28,8 @@ bool Game::isGameOver() const {
     if (board.getRedCount() == 0 || board.getBlackCount() == 0) {
         return true;
     }
-    // TBD: Check if a player has no legal moves
+    
+    
     return false;
 }
 
@@ -38,15 +41,17 @@ bool Game::handlePlayerTurn() {
         io->displayBoard(board, "Your turn (BLACK).", error_message);
         
         if (!io->getPlayerMove(current_player, &m)) {
-            strcpy(error_message, "Invalid input format. Use 'C3 to D4'.");
+            strcpy(error_message, "Invalid input format or position. Use 'C3 to D4'.");
             continue;
         }
 
-        if (m.from.row == -1) {
+        if (m.from.row == -1) { 
             return false;
         }
 
-        if (board.isLegalMove(m)) {
+        
+        MoveError error = board.isLegalMove(m);
+        if (error == NO_ERROR) {
             if (board.movePiece(m)) {
                 move_history.push_back(m);
                 return true;
@@ -56,24 +61,59 @@ bool Game::handlePlayerTurn() {
             }
         } else {
             m.to_char();
-            sprintf(error_message, "Move %s is illegal. Try again.", m.move_string);
+            sprintf(error_message, "Move %s is illegal (Error %d). Try again.", m.move_string, error);
             continue;
         }
     }
 }
 
 bool Game::handleMachineTurn() {
-    // TBD: Implement simple machine logic here. 
-    // For now, it just passes the turn to avoid an infinite loop if called.
+    strcpy(error_message, "No error.");
     
-    // In a final version, this would look like:
-    // 1. Generate all legal moves (board.getLegalMoves(RED))
-    // 2. Select one (e.g., the first one, or a random one)
-    // 3. Execute it (board.movePiece(m))
-    // 4. Record it (move_history.push_back(m))
     
-    // Simple placeholder to pass the turn back immediately
-    strcpy(error_message, "Machine turn skipped (TBD: Implement simple AI).");
+    for (int r = 0; r < 8; ++r) {
+        for (int c = 0; c < 8; ++c) {
+            Position from = {r, c};
+            const Piece* piece = board.getPiece(from);
+
+            if (piece != NULL && piece->getColor() == current_player) {
+                
+                for (int dr_sign = -1; dr_sign <= 1; dr_sign += 2) {
+                    for (int dc_sign = -1; dc_sign <= 1; dc_sign += 2) {
+                        
+                        
+                        int dr1 = dr_sign * 1;
+                        int dc1 = dc_sign * 1;
+                        Move m1 = {from, {r + dr1, c + dc1}, current_player};
+
+                        if (m1.to.is_valid() && board.isLegalMove(m1) == NO_ERROR) {
+                            if (board.movePiece(m1)) {
+                                move_history.push_back(m1);
+                                return true; 
+                            }
+                        }
+
+                        
+                        int dr2 = dr_sign * 2;
+                        int dc2 = dc_sign * 2;
+                        Move m2 = {from, {r + dr2, c + dc2}, current_player};
+                        
+                        
+                        if (m2.to.is_valid() && board.isLegalMove(m2) == NO_ERROR) {
+                            if (board.movePiece(m2)) {
+                                move_history.push_back(m2);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    strcpy(error_message, "Machine (RED) has no legal moves. Game Over.");
+    game_over = true;
     return true; 
 }
 
@@ -83,6 +123,11 @@ void Game::run() {
 
     while (!game_over) {
         bool continue_game = true;
+        
+        
+        if (current_player == RED) {
+            io->displayBoard(board, "Machine's turn (RED).", error_message);
+        }
 
         if (current_player == BLACK) {
             continue_game = handlePlayerTurn();
@@ -95,6 +140,10 @@ void Game::run() {
             break;
         }
         
+        if (game_over) { 
+            continue;
+        }
+        
         if (isGameOver()) {
             game_over = true;
             continue;
@@ -105,7 +154,7 @@ void Game::run() {
 
     io->displayBoard(board, "Game Over!", error_message);
     
-    Color winner = determineWinner();
+    
     if (board.getRedCount() == 0) {
         printf("\n*** GAME OVER: BLACK Wins! ***\n");
     } else if (board.getBlackCount() == 0) {
