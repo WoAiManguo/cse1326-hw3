@@ -2,6 +2,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
+#include <time.h>
 
 Game::Game(GameIO* game_io) 
     : io(game_io), current_player(BLACK), game_over(false) {
@@ -64,6 +65,17 @@ bool Game::handlePlayerTurn() {
 
 bool Game::handleMachineTurn() {
     strcpy(error_message, "No error.");
+
+    
+    io->displayBoard(board, "Machine's turn (RED).", error_message);
+    printf("\nMachine is thinking...\n");
+    
+    
+    clock_t start = clock();
+    double delay_seconds = 2.0;
+    while ((double)(clock() - start) / CLOCKS_PER_SEC < delay_seconds);
+    
+    
     
     for (int r = 0; r < 8; ++r) {
         for (int c = 0; c < 8; ++c) {
@@ -73,6 +85,7 @@ bool Game::handleMachineTurn() {
             if (piece != NULL && piece->getColor() == current_player) {
                 for (int dr_sign = -1; dr_sign <= 1; dr_sign += 2) {
                     for (int dc_sign = -1; dc_sign <= 1; dc_sign += 2) {
+                        
                         
                         int dr1 = dr_sign * 1;
                         int dc1 = dc_sign * 1;
@@ -85,6 +98,7 @@ bool Game::handleMachineTurn() {
                             }
                         }
 
+                        
                         int dr2 = dr_sign * 2;
                         int dc2 = dc_sign * 2;
                         Move m2 = {from, {r + dr2, c + dc2}, current_player};
@@ -101,6 +115,7 @@ bool Game::handleMachineTurn() {
         }
     }
     
+    
     strcpy(error_message, "Machine (RED) has no legal moves. Game Over.");
     game_over = true;
     return true; 
@@ -113,13 +128,13 @@ void Game::run() {
     while (!game_over) {
         bool continue_game = true;
         
-        if (current_player == RED) {
-            io->displayBoard(board, "Machine's turn (RED).", error_message);
-        }
+        
+        
 
         if (current_player == BLACK) {
             continue_game = handlePlayerTurn();
         } else {
+            
             continue_game = handleMachineTurn();
         }
 
