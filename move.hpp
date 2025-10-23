@@ -2,8 +2,6 @@
 
 #include "position.hpp"
 #include "piece.hpp"
-#include "board.hpp"
-
 
 
 struct Move {
@@ -11,7 +9,7 @@ struct Move {
     Position to;
     Color player_color;
 
-    char move_string[16];
+    mutable char move_string[16]; 
 
-    const char* to_char();
+    const char* to_char() const; 
 };

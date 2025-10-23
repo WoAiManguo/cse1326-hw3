@@ -1,7 +1,7 @@
 #include "move.hpp"
 #include <cstdio>
 
-const char* Move::to_char() {
+const char* Move::to_char() const { 
     char from_str[3];
     char to_str[3];
 

@@ -19,8 +19,6 @@ Color Game::determineWinner() const {
     if (board.getRedCount() == 0) return BLACK;
     if (board.getBlackCount() == 0) return RED;
     
-    
-    
     return BLACK;
 }
 
@@ -28,8 +26,6 @@ bool Game::isGameOver() const {
     if (board.getRedCount() == 0 || board.getBlackCount() == 0) {
         return true;
     }
-    
-    
     return false;
 }
 
@@ -49,7 +45,6 @@ bool Game::handlePlayerTurn() {
             return false;
         }
 
-        
         MoveError error = board.isLegalMove(m);
         if (error == NO_ERROR) {
             if (board.movePiece(m)) {
@@ -70,17 +65,14 @@ bool Game::handlePlayerTurn() {
 bool Game::handleMachineTurn() {
     strcpy(error_message, "No error.");
     
-    
     for (int r = 0; r < 8; ++r) {
         for (int c = 0; c < 8; ++c) {
             Position from = {r, c};
             const Piece* piece = board.getPiece(from);
 
             if (piece != NULL && piece->getColor() == current_player) {
-                
                 for (int dr_sign = -1; dr_sign <= 1; dr_sign += 2) {
                     for (int dc_sign = -1; dc_sign <= 1; dc_sign += 2) {
-                        
                         
                         int dr1 = dr_sign * 1;
                         int dc1 = dc_sign * 1;
@@ -93,11 +85,9 @@ bool Game::handleMachineTurn() {
                             }
                         }
 
-                        
                         int dr2 = dr_sign * 2;
                         int dc2 = dc_sign * 2;
                         Move m2 = {from, {r + dr2, c + dc2}, current_player};
-                        
                         
                         if (m2.to.is_valid() && board.isLegalMove(m2) == NO_ERROR) {
                             if (board.movePiece(m2)) {
@@ -111,7 +101,6 @@ bool Game::handleMachineTurn() {
         }
     }
     
-    
     strcpy(error_message, "Machine (RED) has no legal moves. Game Over.");
     game_over = true;
     return true; 
@@ -123,7 +112,6 @@ void Game::run() {
 
     while (!game_over) {
         bool continue_game = true;
-        
         
         if (current_player == RED) {
             io->displayBoard(board, "Machine's turn (RED).", error_message);
@@ -140,7 +128,7 @@ void Game::run() {
             break;
         }
         
-        if (game_over) { 
+        if (game_over) {
             continue;
         }
         
@@ -153,7 +141,6 @@ void Game::run() {
     }
 
     io->displayBoard(board, "Game Over!", error_message);
-    
     
     if (board.getRedCount() == 0) {
         printf("\n*** GAME OVER: BLACK Wins! ***\n");
