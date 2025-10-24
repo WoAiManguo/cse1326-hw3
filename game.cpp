@@ -35,10 +35,10 @@ bool Game::handlePlayerTurn() {
     strcpy(error_message, "No error.");
     
     while (true) {
-        io->displayBoard(board, "Your turn (BLACK).", error_message);
+        io->displayBoard(board, "Player's turn.", error_message);
         
         if (!io->getPlayerMove(current_player, &m)) {
-            strcpy(error_message, "Invalid input format or position. Use 'C3 to D4'.");
+            strcpy(error_message, "Invalid input format or position. Use 'B3 to A4'.");
             continue;
         }
 
@@ -57,7 +57,7 @@ bool Game::handlePlayerTurn() {
             }
         } else {
             m.to_char();
-            sprintf(error_message, "Move %s is illegal (Error %d). Try again.", m.move_string, error);
+            sprintf(error_message, "Move %s is illegal. Try again.", m.move_string);
             continue;
         }
     }
@@ -67,8 +67,8 @@ bool Game::handleMachineTurn() {
     strcpy(error_message, "No error.");
 
     
-    io->displayBoard(board, "Machine's turn (RED).", error_message);
-    printf("\nMachine is thinking...\n");
+    io->displayBoard(board, "RED's turn.", error_message);
+    printf("\nRED is thinking...\n");
     
     
     clock_t start = clock();
@@ -116,14 +116,14 @@ bool Game::handleMachineTurn() {
     }
     
     
-    strcpy(error_message, "Machine (RED) has no legal moves. Game Over.");
+    strcpy(error_message, "RED has no legal moves. Game Over.");
     game_over = true;
     return true; 
 }
 
 void Game::run() {
     initializeGame();
-    printf("Game started. BLACK (bottom) moves first. Type 'stop' to exit.\n");
+    printf("Game started. BLACK moves first. Type 'stop' to exit.\n");
 
     while (!game_over) {
         bool continue_game = true;
@@ -139,7 +139,6 @@ void Game::run() {
         }
 
         if (!continue_game) {
-            printf("\nUser entered 'stop'. Exiting game.\n");
             break;
         }
         
@@ -158,12 +157,12 @@ void Game::run() {
     io->displayBoard(board, "Game Over!", error_message);
     
     if (board.getRedCount() == 0) {
-        printf("\n*** GAME OVER: BLACK Wins! ***\n");
+        printf("\nGAME OVER: BLACK Wins!\n");
     } else if (board.getBlackCount() == 0) {
-        printf("\n*** GAME OVER: RED Wins! ***\n");
+        printf("\nGAME OVER: RED Wins!\n");
     } else {
-        printf("\n*** GAME ENDED EARLY ***\n");
+        printf("\nGAME ENDED EARLY\n");
     }
 
-    io->displayMoveHistory(move_history);
+    io->displayHistory(move_history);
 }

@@ -5,9 +5,6 @@
 #include <cstdlib>
 
 void ConsoleIO::displayBoard(const Board& board, const char* status_msg, const char* error_msg) {
-    printf("ERROR: %s\n", error_msg);
-    printf("STATUS: %s\n", status_msg);
-
     printf("  +---+---+---+---+---+---+---+---+\n");
     for (int r = 7; r >= 0; --r) {
         printf("%d |", r + 1);
@@ -30,7 +27,7 @@ bool ConsoleIO::getPlayerMove(Color player, Move* move_out) {
     char to_keyword[3] = {'\0'};
     char first_token[5] = {'\0'};
 
-    printf("\n%s Player, enter move (e.g., C3 to D4) or 'stop': ", (player == BLACK) ? "BLACK" : "RED");
+    printf("\nenter move (example: 'B3 to A4') or 'stop': ");
     
     if (fscanf(stdin, "%4s", first_token) == 1) {
         
@@ -61,7 +58,7 @@ bool ConsoleIO::getPlayerMove(Color player, Move* move_out) {
     return false;
 }
 
-void ConsoleIO::displayMoveHistory(const std::vector<Move>& history) {
+void ConsoleIO::displayHistory(const std::vector<Move>& history) {
     printf("\n--- Move History ---\n");
     if (history.empty()) {
         printf("No moves were made.\n");
